@@ -1,0 +1,42 @@
+--- jboss-logging-3.3.0.Final/src/main/java/org/jboss/logging/LoggerProviders.java~	2015-05-28 18:49:04.000000000 +0200
++++ jboss-logging-3.3.0.Final/src/main/java/org/jboss/logging/LoggerProviders.java	2018-05-25 08:48:45.830239006 +0200
+@@ -51,8 +51,6 @@
+                     return tryJBossLogManager(cl, "system property");
+                 } else if ("jdk".equalsIgnoreCase(loggerProvider)) {
+                     return tryJDK("system property");
+-                } else if ("log4j2".equalsIgnoreCase(loggerProvider)) {
+-                    return tryLog4j2(cl, "system property");
+                 } else if ("log4j".equalsIgnoreCase(loggerProvider)) {
+                     return tryLog4j(cl, "system property");
+                 } else if ("slf4j".equalsIgnoreCase(loggerProvider)) {
+@@ -87,12 +85,6 @@
+             // nope...
+         }
+         try {
+-            // MUST try Log4j 2.x BEFORE Log4j 1.x because Log4j 2.x also passes Log4j 1.x test in some circumstances
+-            return tryLog4j2(cl, null);
+-        } catch (Throwable t) {
+-            // nope...
+-        }
+-        try {
+             return tryLog4j(cl, null);
+         } catch (Throwable t) {
+             // nope...
+@@ -118,17 +110,6 @@
+         logProvider(provider, via);
+         return provider;
+     }
+-
+-    // JBLOGGING-95 - Add support for Log4j 2.x
+-    private static LoggerProvider tryLog4j2(final ClassLoader cl, final String via) throws ClassNotFoundException {
+-        Class.forName("org.apache.logging.log4j.Logger", true, cl);
+-        Class.forName("org.apache.logging.log4j.LogManager", true, cl);
+-        Class.forName("org.apache.logging.log4j.spi.AbstractLogger", true, cl);
+-        LoggerProvider provider = new Log4j2LoggerProvider();
+-        // if Log4j 2 has a bad implementation that doesn't extend AbstractLogger, we won't know until getting the first logger throws an exception
+-        logProvider(provider, via);
+-        return provider;
+-    }
+ 
+     private static LoggerProvider tryLog4j(final ClassLoader cl, final String via) throws ClassNotFoundException {
+         Class.forName("org.apache.log4j.LogManager", true, cl);
